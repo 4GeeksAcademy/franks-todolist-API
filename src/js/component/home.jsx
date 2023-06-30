@@ -1,48 +1,87 @@
-import React, { useState } from "react";
-
-//include images into your bundle
-import rigoImage from "../../img/rigo-baby.jpg";
+import React, { useState, useEffect } from 'react';
 
 const Home = () => {
-  const [inputValue, setInputValue] = useState("");
   const [todos, setTodos] = useState([]);
+  const [inputValue, setInputValue] = useState('');
+
+  useEffect(() => {
+    fetch('https://assets.breatheco.de/apis/fake/todos/user/user1')
+      .then((response) => response.json())
+      .then((data) => {
+        setTodos(data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
 
   const handleInputChange = (e) => {
     setInputValue(e.target.value);
   };
 
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
-      setTodos((prevTodos) => [...prevTodos, inputValue]);
-      setInputValue("");
+  const handleAddTodo = () => {
+    if (inputValue.trim() !== '') {
+      const newTodo = {
+        label: inputValue,
+        done: false,
+      };
+
+      fetch('https://assets.breatheco.de/apis/fake/todos/user/user1', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify([...todos, newTodo]),
+      })
+        .then((response) => response.json())
+        .then(() => {
+          setTodos([...todos, newTodo]);
+          setInputValue('');
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     }
   };
 
-  const handleDelete = (index) => {
-    setTodos((prevTodos) => prevTodos.filter((_, i) => i !== index));
+  const handleDeleteTodo = (index) => {
+    const todoToDelete = todos[index];
+    const updatedTodos = todos.filter((_, idx) => idx !== index);
+
+    fetch('https://assets.breatheco.de/apis/fake/todos/user/user1', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updatedTodos),
+    })
+      .then((response) => response.json())
+      .then(() => {
+        setTodos(updatedTodos);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   return (
-    <div className="container">
-      <h1>My todos</h1>
+    <div>
+      <h1>Todo List</h1>
+      <input
+        type="text"
+        value={inputValue}
+        onChange={handleInputChange}
+        placeholder="Enter a new todo"
+      />
+      <button onClick={handleAddTodo}>Add Todo</button>
       <ul>
-        <li>
-          <input
-            type="text"
-            placeholder="What do you need to do?"
-            value={inputValue}
-            onChange={handleInputChange}
-            onKeyPress={handleKeyPress}
-          />
-        </li>
         {todos.map((todo, index) => (
           <li key={index}>
-            {todo}{" "}
-            <i className="fas fa-trash" onClick={() => handleDelete(index)}></i>
+            {todo.label}
+            <button onClick={() => handleDeleteTodo(index)}>Delete</button>
           </li>
         ))}
       </ul>
-      <div>{todos.length} tasks</div>
     </div>
   );
 };

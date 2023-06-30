@@ -1,22 +1,28 @@
 body {
     margin-top: 100px;
-}
 
-ul {
+  }
+  
+  ul {
     padding: 0;
-}
-
-ul li {
+  }
+  
+  ul li {
     border: 1px solid gray;
     list-style: none;
     padding: 5px;
-}
-
-h1 {
     text-align: center;
-}
-
-input {
+  }
+  
+  h1 {
+    text-align: center;
+  }
+  
+  input {
     border: none;
     width: 100%;
-}
+    text-align: center;
+
+  }
+
+  
